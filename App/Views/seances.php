@@ -6,7 +6,7 @@
         <th>Titre</th>
         <th>Date</th>
         <th>Heure</th>
-        <th>Durée (min)</th>
+        <th>Durée</th>
     </tr>
     <?php foreach($seances as $s): ?>
     <tr>
