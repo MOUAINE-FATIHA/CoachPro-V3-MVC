@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use PDO;
@@ -6,27 +7,109 @@ use App\Models\Database;
 
 class Seance
 {
-    public static function create($coach_id, $titre, $date, $heure, $duree)
+    public static function create($coach_id, $date_seance, $heure, $duree)
     {
-        $db = Database::getInstance()->getConnection();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
-            INSERT INTO seances (id_coach, titre, date, heure, duree)
-            VALUES (:id_coach, :titre, :date, :heure, :duree)
+            INSERT INTO seances (coach_id, date_seance, heure, duree)
+            VALUES (:coach_id, :date_seance, :heure, :duree)
         ");
+
         return $stmt->execute([
-            'id_coach' => $coach_id,
-            'titre' => $titre,
-            'date' => $date,
-            'heure' => $heure,
-            'duree' => $duree
+            'coach_id'    => $coach_id,
+            'date_seance' => $date_seance,
+            'heure'       => $heure,
+            'duree'       => $duree
         ]);
     }
 
     public static function getAllByCoach($coach_id)
     {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM seances WHERE id_coach = :id_coach ORDER BY date, heure");
-        $stmt->execute(['id_coach' => $coach_id]);
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            SELECT *
+            FROM seances
+            WHERE coach_id = :coach_id
+            ORDER BY date_seance, heure
+        ");
+        $stmt->execute(['coach_id' => $coach_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public static function findById($id, $coach_id)
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            SELECT *
+            FROM seances
+            WHERE id = :id AND coach_id = :coach_id
+        ");
+        $stmt->execute([
+            'id'       => $id,
+            'coach_id' => $coach_id
+        ]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function getAllAvailable()
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            SELECT s.id, s.date_seance, s.heure, s.duree, s.statut,
+                   u.nom as coach_nom, u.prenom as coach_prenom, c.discipline
+            FROM seances s
+            JOIN coaches c ON s.coach_id = c.id
+            JOIN users u ON c.user_id = u.id
+            WHERE s.statut = 'disponible'
+            ORDER BY s.date_seance ASC, s.heure ASC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getAvailable()
+    {
+        $db = Database::getInstance();
+        $stmt = $db->query("
+            SELECT s.id, s.date_seance, s.heure, s.duree,
+                   u.nom, u.prenom, c.discipline
+            FROM seances s
+            JOIN coaches c ON s.coach_id = c.id
+            JOIN users u ON c.user_id = u.id
+            WHERE s.statut = 'disponible'
+            ORDER BY s.date_seance, s.heure
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function update($id, $coach_id, $date_seance, $heure, $duree)
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            UPDATE seances
+            SET date_seance = :date_seance,
+                heure = :heure,
+                duree = :duree
+            WHERE id = :id AND coach_id = :coach_id
+        ");
+
+        return $stmt->execute([
+            'date_seance' => $date_seance,
+            'heure'       => $heure,
+            'duree'       => $duree,
+            'id'          => $id,
+            'coach_id'    => $coach_id
+        ]);
+    }
+    public static function delete($id, $coach_id)
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            DELETE FROM seances
+            WHERE id = :id AND coach_id = :coach_id
+        ");
+        return $stmt->execute([
+            'id'       => $id,
+            'coach_id' => $coach_id
+        ]);
     }
 }

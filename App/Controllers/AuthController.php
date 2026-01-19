@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Models\Coach;
+use App\Models\Sportif;
 
 class AuthController
 {
@@ -42,8 +43,6 @@ class AuthController
         include __DIR__ . '/../Views/auth/login.php';
     }
 
-
-
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -81,6 +80,8 @@ class AuthController
 
             if ($role === 'coach') {
                 Coach::create($user_id, $discipline, $annees_exp, $description);
+            } elseif ($role === 'sportif') {
+                Sportif::create($user_id);
             }
 
             $success = "Inscription réussie, connectez-vous";
@@ -88,5 +89,14 @@ class AuthController
             return;
         }
         include __DIR__ . '/../Views/auth/register.php';
+    }
+
+    public function logout()
+    {
+        session_start();
+        session_unset();
+        session_destroy();
+        header('Location: /sport-mvc/public/login');
+        exit;
     }
 }

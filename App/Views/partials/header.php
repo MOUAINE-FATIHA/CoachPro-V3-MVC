@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Sport MVC</title>
-    <link rel="stylesheet" href="/sport-mvc/public/assets/css/design.css">
+    <title>Sport</title>
+    <link rel="stylesheet" href="/sport-mvc/public/assets/css/dashboard.css">
 </head>
 <body>

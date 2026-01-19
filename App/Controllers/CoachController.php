@@ -1,69 +1,62 @@
 <?php
+
 namespace App\Controllers;
 
 use Core\Session;
 use App\Models\Coach;
 use App\Models\Seance;
+use App\Models\Reservation;
 
 class CoachController
 {
     public function dashboard()
     {
-        Session::requireRole('coach'); 
+        Session::requireRole('coach');
+
+        $coach = Coach::findByUserId($_SESSION['user_id']);
+        $seances = Seance::getAllByCoach($coach['id']);
+        $reservations = Reservation::getByCoach($coach['id']);
+
         include __DIR__ . '/../Views/coach/dashboard.php';
     }
 
-   
+
     public function profile()
     {
         Session::requireRole('coach');
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        include __DIR__ . '/../Views/coach/profile.php';
+    }
 
-        $user_id = $_SESSION['user_id'] ?? null;
-        if (!$user_id) {
-            header('Location: /sport-mvc/public/login');
-            exit;
+    public function updateProfile()
+    {
+        Session::requireRole('coach');
+
+        $user_id = $_SESSION['user_id'];
+        $discipline = $_POST['discipline'] ?? '';
+        $annees_exp = $_POST['annees_exp'] ?? '';
+        $description = $_POST['description'] ?? '';
+
+        if (empty($discipline) || empty($annees_exp)) {
+            $error = "Tous les champs sont obligatoires";
+        } else {
+            Coach::updateProfile($user_id, $discipline, $annees_exp, $description);
+            $success = "Profil mis à jour";
         }
 
         $coach = Coach::findByUserId($user_id);
-        $discipline = $coach['discipline'] ?? '';
-        $annees_exp = $coach['annees_exp'] ?? '';
-        $description = $coach['description'] ?? '';
-        $nom = $coach['nom'] ?? '';
-        $prenom = $coach['prenom'] ?? '';
-        $email = $coach['email'] ?? '';
-
         include __DIR__ . '/../Views/coach/profile.php';
     }
-    public function updateProfile()
-{
-    Session::requireRole('coach');
-    $user_id = $_SESSION['user_id'];
 
-    $discipline = $_POST['discipline'] ?? '';
-    $annees_exp = $_POST['annees_exp'] ?? '';
-    $description = $_POST['description'] ?? '';
-
-    $error = '';
-    $success = '';
-
-    if (empty($discipline) || empty($annees_exp)) {
-        $error = "Discipline et années d'expérience sont obligatoires";
-    } else {
-        $updated = Coach::updateProfile($user_id, $discipline, $annees_exp, $description);
-        if ($updated) {
-            $success = "Profil mis à jour avec succès";
-        } else {
-            $error = "Erreur lors de la mise à jour";
-        }
-    }
-
-    $coach = Coach::findByUserId($user_id);
-    include __DIR__ . '/../Views/coach/profile.php';
-}
-public function seances()
+    public function seances()
     {
         Session::requireRole('coach');
-        $coach_id = $_SESSION['user_id'];
+
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
         $seances = Seance::getAllByCoach($coach_id);
         include __DIR__ . '/../Views/coach/seances.php';
     }
@@ -72,26 +65,99 @@ public function seances()
     {
         Session::requireRole('coach');
 
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $titre = trim($_POST['titre']);
-            $date = $_POST['date'];
-            $heure = $_POST['heure'];
-            $duree = (int)$_POST['duree'];
+            $date_seance = $_POST['date_seance'] ?? '';
+            $heure = $_POST['heure'] ?? '';
+            $duree = $_POST['duree'] ?? '';
 
-            if (empty($titre) || empty($date) || empty($heure) || empty($duree)) {
+            if (empty($date_seance) || empty($heure) || empty($duree)) {
                 $error = "Tous les champs sont obligatoires";
-                include __DIR__ . '/../Views/coach/create_seance.php';
-                return;
+            } else {
+                Seance::create($coach_id, $date_seance, $heure, $duree);
+                header('Location: /sport-mvc/public/coach/seances');
+                exit;
             }
-
-            $coach_id = $_SESSION['user_id'];
-            Seance::create($coach_id, $titre, $date, $heure, $duree);
-
-            header('Location: /sport-mvc/public/coach/seances');
-            exit;
         }
 
         include __DIR__ . '/../Views/coach/create_seance.php';
     }
+    public function editSeance()
+    {
+        Session::requireRole('coach');
 
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: /sport-mvc/public/coach/seances');
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
+        $seance = Seance::findById($id, $coach_id);
+        if (!$seance) {
+            die("Séance introuvable");
+        }
+
+        include __DIR__ . '/../Views/coach/edit_seance.php';
+    }
+    public function updateSeance()
+    {
+        Session::requireRole('coach');
+
+        $id = $_POST['id'] ?? null;
+        $date_seance = $_POST['date_seance'] ?? '';
+        $heure = $_POST['heure'] ?? '';
+        $duree = $_POST['duree'] ?? '';
+
+        if (!$id || empty($date_seance) || empty($heure) || empty($duree)) {
+            die("Données invalides");
+        }
+
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
+        Seance::update($id, $coach_id, $date_seance, $heure, $duree);
+
+        header('Location: /sport-mvc/public/coach/seances');
+        exit;
+    }
+
+    public function deleteSeance()
+    {
+        Session::requireRole('coach');
+
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: /sport-mvc/public/coach/seances');
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
+        Seance::delete($id, $coach_id);
+
+        header('Location: /sport-mvc/public/coach/seances');
+        exit;
+    }
+    public function reservations()
+    {
+        Session::requireRole('coach');
+
+        $user_id = $_SESSION['user_id'];
+        $coach = Coach::findByUserId($user_id);
+        $coach_id = $coach['id'];
+
+        $reservations = Reservation::getByCoach($coach_id);
+
+        include __DIR__ . '/../Views/coach/reservations.php';
+    }
 }
