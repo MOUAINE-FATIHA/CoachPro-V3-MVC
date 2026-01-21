@@ -3,6 +3,11 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.h {
+    color: #ffd54f;
+    font-weight: bold;
+}
+
 .navbar {
     background: #1b3f65ff;
     padding: 15px;
@@ -34,7 +39,36 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    transition: 0.3s;
+}
+
+.btn-accept {
+    background-color: #2ecc71;
+}
+
+.btn-accept:hover {
+    background-color: #27ae60;
+}
+.btn-refuse {
+    background-color: #e74c3c;
+}
+
+.btn-refuse:hover {
+    background-color: #c0392b;
 }

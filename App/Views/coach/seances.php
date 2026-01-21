@@ -1,14 +1,12 @@
 <?php include __DIR__ . '/../partials/header.php'; ?>
 <?php include __DIR__ . '/../partials/nav.php'; ?>
-
 <div class="container">
     <h2>Mes séances</h2>
-
-    <a href="/sport-mvc/public/coach/seances/create">➕ Créer une séance</a>
+    <a href="/sport-mvc/public/coach/seances/create"> Créer une séance</a>
     <br><br>
 
     <?php if (empty($seances)): ?>
-        <p>Aucune séance créée.</p>
+        <p>Aucune séance créée</p>
     <?php else: ?>
         <table border="1" width="100%" cellpadding="5">
             <tr>
@@ -24,7 +22,7 @@
                     <td><?= htmlspecialchars($s['duree']) ?> min</td>
                     <td>
                         <a href="/sport-mvc/public/coach/seances/edit?id=<?= $s['id'] ?>"></a>
-                        |
+                        -
                         <a href="/sport-mvc/public/coach/seances/delete?id=<?= $s['id'] ?>"
                            onclick="return confirm('Supprimer cette séance ?')"></a>
                     </td>

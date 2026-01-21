@@ -24,7 +24,9 @@
             align-items: center;
             padding: 20px;
         }
-
+        .h {
+            color: #d2a812;
+        }
         nav {
             width: 100%;
             background-color: #0f2d4f;
@@ -34,8 +36,10 @@
             gap: 20px;
             margin-bottom: 30px;
         }
+        
 
         nav a {
+            margin-left: 20px;
             color: #d2a812;
             text-decoration: none;
             font-weight: bold;
@@ -116,6 +120,7 @@
 <body>
 
 <nav>
+    <div class="h">Coach</div>
     <a href="/sport-mvc/public/coach/dashboard">Dashboard</a>
     <a href="/sport-mvc/public/logout">Déconnexion</a>
 </nav>

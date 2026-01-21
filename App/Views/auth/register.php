@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Register | Sport MVC</title>
+    <title>Register</title>
     <style>
         * {
             margin: 0;

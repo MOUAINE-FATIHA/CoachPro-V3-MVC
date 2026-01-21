@@ -5,28 +5,30 @@ use PDO;
 
 class Database
 {
-    private static $instance = null;
-    private $pdo;
+    private static $pdo = null;
 
-    private function __construct()
-    {
-        $host = 'localhost';
-        $dbname = 'sport_mvc';
-        $user = 'postgres';
-        $password = 'toha'; 
+    public static function getInstance(){
+        if (self::$pdo === null) {
+            $host = $_ENV['DB_HOST'] ?? 'localhost';
+            $dbname = $_ENV['DB_NAME'] ?? 'sport_mvc';
+            $user = $_ENV['DB_USER'] ?? 'postgres';
+            $pass = $_ENV['DB_PASS'] ?? 'toha';
 
-        try {
-            $this->pdo = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (\PDOException $e) {
-            die("Erreur de connexion DB: " . $e->getMessage());
+            try {
+                self::$pdo = new PDO(
+                    "pgsql:host=$host;dbname=$dbname",
+                    $user,
+                    $pass,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    ]
+                );
+            } catch (\PDOException $e) {
+                die("Erreur DB: " . $e->getMessage());
+            }
         }
-    }
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new Database();
-        }
-        return self::$instance->pdo; 
+
+        return self::$pdo; 
     }
 }

@@ -5,10 +5,8 @@ namespace App\Models;
 use PDO;
 use App\Models\Database;
 
-class Coach
-{
-    public static function create($user_id, $discipline, $annees_exp, $description)
-    {
+class Coach{
+    public static function create($user_id, $discipline, $annees_exp, $description){
         $db = Database::getInstance();
 
 
@@ -24,11 +22,8 @@ class Coach
             'description' => $description
         ]);
     }
-    public static function findByUserId($user_id)
-    {
+    public static function findByUserId($user_id){
         $db = Database::getInstance();
-
-
         $stmt = $db->prepare("
             SELECT c.*, u.nom, u.prenom, u.email
             FROM coaches c
@@ -38,8 +33,7 @@ class Coach
         $stmt->execute([$user_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public static function updateProfile($user_id, $discipline, $annees_exp, $description)
-    {
+    public static function updateProfile($user_id, $discipline, $annees_exp, $description){
         $db = Database::getInstance();
 
 
@@ -50,8 +44,7 @@ class Coach
         ");
         return $stmt->execute([$discipline, $annees_exp, $description, $user_id]);
     }
-    public static function getAll()
-    {
+    public static function getAll(){
         $db = Database::getInstance();
 
         $stmt = $db->query("

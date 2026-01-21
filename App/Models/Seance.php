@@ -1,14 +1,9 @@
 <?php
-
 namespace App\Models;
-
 use PDO;
-use App\Models\Database;
 
-class Seance
-{
-    public static function create($coach_id, $date_seance, $heure, $duree)
-    {
+class Seance{
+    public static function create($coach_id, $date_seance, $heure, $duree){
         $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO seances (coach_id, date_seance, heure, duree)
@@ -23,8 +18,7 @@ class Seance
         ]);
     }
 
-    public static function getAllByCoach($coach_id)
-    {
+    public static function getAllByCoach($coach_id){
         $db = Database::getInstance();
         $stmt = $db->prepare("
             SELECT *
@@ -35,8 +29,7 @@ class Seance
         $stmt->execute(['coach_id' => $coach_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public static function findById($id, $coach_id)
-    {
+    public static function findById($id, $coach_id){
         $db = Database::getInstance();
         $stmt = $db->prepare("
             SELECT *
@@ -50,24 +43,29 @@ class Seance
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function getAllAvailable()
-    {
-        $db = Database::getInstance();
-        $stmt = $db->prepare("
-            SELECT s.id, s.date_seance, s.heure, s.duree, s.statut,
-                   u.nom as coach_nom, u.prenom as coach_prenom, c.discipline
+    public static function getAllAvailable(){
+        $pdo = Database::getInstance();
+
+        $stmt = $pdo->query("
+            SELECT 
+                s.id,
+                s.date_seance,
+                s.heure,
+                s.duree,
+                u.nom AS coach_nom,
+                u.prenom AS coach_prenom,
+                c.discipline
             FROM seances s
             JOIN coaches c ON s.coach_id = c.id
             JOIN users u ON c.user_id = u.id
             WHERE s.statut = 'disponible'
-            ORDER BY s.date_seance ASC, s.heure ASC
+            ORDER BY s.date_seance, s.heure
         ");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $stmt->fetchAll();
     }
 
-    public static function getAvailable()
-    {
+    public static function getAvailable(){
         $db = Database::getInstance();
         $stmt = $db->query("
             SELECT s.id, s.date_seance, s.heure, s.duree,
@@ -81,8 +79,7 @@ class Seance
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function update($id, $coach_id, $date_seance, $heure, $duree)
-    {
+    public static function update($id, $coach_id, $date_seance, $heure, $duree){
         $db = Database::getInstance();
         $stmt = $db->prepare("
             UPDATE seances
@@ -100,8 +97,7 @@ class Seance
             'coach_id'    => $coach_id
         ]);
     }
-    public static function delete($id, $coach_id)
-    {
+    public static function delete($id, $coach_id){
         $db = Database::getInstance();
         $stmt = $db->prepare("
             DELETE FROM seances

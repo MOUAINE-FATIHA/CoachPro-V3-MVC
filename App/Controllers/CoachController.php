@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Controllers;
-
 use Core\Session;
 use App\Models\Coach;
 use App\Models\Seance;
 use App\Models\Reservation;
 
-class CoachController
-{
-    public function dashboard()
-    {
+class CoachController{
+    public function dashboard(){
         Session::requireRole('coach');
 
         $coach = Coach::findByUserId($_SESSION['user_id']);
@@ -21,16 +17,14 @@ class CoachController
     }
 
 
-    public function profile()
-    {
+    public function profile(){
         Session::requireRole('coach');
         $user_id = $_SESSION['user_id'];
         $coach = Coach::findByUserId($user_id);
         include __DIR__ . '/../Views/coach/profile.php';
     }
 
-    public function updateProfile()
-    {
+    public function updateProfile(){
         Session::requireRole('coach');
 
         $user_id = $_SESSION['user_id'];
@@ -49,8 +43,7 @@ class CoachController
         include __DIR__ . '/../Views/coach/profile.php';
     }
 
-    public function seances()
-    {
+    public function seances(){
         Session::requireRole('coach');
 
         $user_id = $_SESSION['user_id'];
@@ -61,8 +54,7 @@ class CoachController
         include __DIR__ . '/../Views/coach/seances.php';
     }
 
-    public function createSeance()
-    {
+    public function createSeance(){
         Session::requireRole('coach');
 
         $user_id = $_SESSION['user_id'];
@@ -85,8 +77,7 @@ class CoachController
 
         include __DIR__ . '/../Views/coach/create_seance.php';
     }
-    public function editSeance()
-    {
+    public function editSeance(){
         Session::requireRole('coach');
 
         $id = $_GET['id'] ?? null;
@@ -106,8 +97,7 @@ class CoachController
 
         include __DIR__ . '/../Views/coach/edit_seance.php';
     }
-    public function updateSeance()
-    {
+    public function updateSeance(){
         Session::requireRole('coach');
 
         $id = $_POST['id'] ?? null;
@@ -129,8 +119,7 @@ class CoachController
         exit;
     }
 
-    public function deleteSeance()
-    {
+    public function deleteSeance(){
         Session::requireRole('coach');
 
         $id = $_GET['id'] ?? null;
@@ -148,8 +137,7 @@ class CoachController
         header('Location: /sport-mvc/public/coach/seances');
         exit;
     }
-    public function reservations()
-    {
+    public function reservations(){
         Session::requireRole('coach');
 
         $user_id = $_SESSION['user_id'];
@@ -159,5 +147,30 @@ class CoachController
         $reservations = Reservation::getByCoach($coach_id);
 
         include __DIR__ . '/../Views/coach/reservations.php';
+    }
+
+    public function updateReservationStatus(){
+        session_start();
+
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'coach') {
+            die('Accès refusé');
+        }
+
+        if (!isset($_GET['id']) || !isset($_GET['action'])) {
+            header('Location: /sport-mvc/public/coach/dashboard');
+            exit;
+        }
+
+        $reservation_id = $_GET['id'];
+        $action = $_GET['action'];
+
+        if ($action === 'accept') {
+            Reservation::updateStatus($reservation_id, 'acceptee');
+        } elseif ($action === 'refuse') {
+            Reservation::updateStatus($reservation_id, 'refusee');
+        }
+
+        header('Location: /sport-mvc/public/coach/dashboard');
+        exit;
     }
 }

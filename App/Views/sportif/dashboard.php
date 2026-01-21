@@ -1,10 +1,12 @@
 <?php
+
 use App\Models\Seance;
 use App\Models\Coach;
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Sportif</title>
@@ -16,33 +18,46 @@ use App\Models\Coach;
             background: #f4f4f9;
         }
 
-        a { text-decoration: none; color: #333; }
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .h {
+            color: #d2a812;
+        }
 
         nav {
-            background: #1b3f65ff;
-            color: #fff;
+            background-color: #0f2d4f;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         nav .links a {
             margin-left: 20px;
-            color: #fff;
+            color: #d2a812;
+            text-decoration: none;
             font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         nav .links a:hover {
-            text-decoration: underline;
+            color: #fff;
         }
+
+
         .container {
             max-width: 1000px;
             margin: 30px auto;
             padding: 20px;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -56,7 +71,8 @@ use App\Models\Coach;
             margin-bottom: 30px;
         }
 
-        table th, table td {
+        table th,
+        table td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
@@ -92,83 +108,89 @@ use App\Models\Coach;
             margin-top: 10px;
         }
 
-        .error { color: red; }
-        .success { color: green; }
+        .error {
+            color: red;
+        }
 
+        .success {
+            color: green;
+        }
     </style>
 </head>
+
 <body>
 
-<nav>
-    <div>Dashboard Sportif</div>
-    <div class="links">
-        <a href="/sport-mvc/public/sportif/dashboard">Dashboard</a>
-        <a href="/sport-mvc/public/sportif/history">Mes Réservations</a>
-        <a href="/sport-mvc/public/logout">Déconnexion</a>
-    </div>
-</nav>
+    <nav>
+        <div class="h">Dashboard Sportif</div>
+        <div class="links">
+            <!-- <a href="/sport-mvc/public/sportif/dashboard">Dashboard</a> -->
+            <a href="/sport-mvc/public/sportif/history">Mes Réservations</a>
+            <a href="/sport-mvc/public/logout">Déconnexion</a>
+        </div>
+    </nav>
 
-<div class="container">
+    <div class="container">
 
-    <div class="section">
-        <h2>Liste des Coachs Disponibles</h2>
-        <?php if (!empty($coachs)): ?>
-            <table>
-                <tr>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Discipline</th>
-                    <th>Années d'expérience</th>
-                    <th>Description</th>
-                </tr>
-                <?php foreach ($coachs as $coach): ?>
+        <div class="section">
+            <h2>Liste des Coachs Disponibles</h2>
+            <?php if (!empty($coachs)): ?>
+                <table>
                     <tr>
-                        <td><?= htmlspecialchars($coach['nom']) ?></td>
-                        <td><?= htmlspecialchars($coach['prenom']) ?></td>
-                        <td><?= htmlspecialchars($coach['discipline']) ?></td>
-                        <td><?= htmlspecialchars($coach['annees_exp']) ?></td>
-                        <td><?= htmlspecialchars($coach['description']) ?></td>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Discipline</th>
+                        <th>Années d'expérience</th>
+                        <th>Description</th>
                     </tr>
-                <?php endforeach; ?>
-            </table>
-        <?php else: ?>
-            <p>Aucun coach disponible.</p>
-        <?php endif; ?>
-    </div>
+                    <?php foreach ($coachs as $coach): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($coach['nom']) ?></td>
+                            <td><?= htmlspecialchars($coach['prenom']) ?></td>
+                            <td><?= htmlspecialchars($coach['discipline']) ?></td>
+                            <td><?= htmlspecialchars($coach['annees_exp']) ?></td>
+                            <td><?= htmlspecialchars($coach['description']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php else: ?>
+                <p>Aucun coach disponible.</p>
+            <?php endif; ?>
+        </div>
 
-    <div class="section">
-        <h2>Séances Disponibles</h2>
-        <?php if (!empty($seances)): ?>
-            <table>
-                <tr>
-                    <th>Coach</th>
-                    <th>Discipline</th>
-                    <th>Date</th>
-                    <th>Heure</th>
-                    <th>Durée (min)</th>
-                    <th>Action</th>
-                </tr>
-                <?php foreach ($seances as $seance): ?>
+        <div class="section">
+            <h2>Séances Disponibles</h2>
+            <?php if (!empty($seances)): ?>
+                <table>
                     <tr>
-                        <td><?= htmlspecialchars($seance['coach_nom'] . ' ' . $seance['coach_prenom']) ?></td>
-                        <td><?= htmlspecialchars($seance['discipline']) ?></td>
-                        <td><?= htmlspecialchars($seance['date_seance']) ?></td>
-                        <td><?= htmlspecialchars($seance['heure']) ?></td>
-                        <td><?= htmlspecialchars($seance['duree']) ?></td>
-                        <td>
-                            <a href="/sport-mvc/public/sportif/reserver?id=<?= $seance['id'] ?>">
-                                <button>Réserver</button>
-                            </a>
-                        </td>
+                        <th>Coach</th>
+                        <th>Discipline</th>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Durée (min)</th>
+                        <th>Action</th>
                     </tr>
-                <?php endforeach; ?>
-            </table>
-        <?php else: ?>
-            <p>Aucune séance disponible.</p>
-        <?php endif; ?>
-    </div>
+                    <?php foreach ($seances as $seance): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($seance['coach_nom'] . ' ' . $seance['coach_prenom']) ?></td>
+                            <td><?= htmlspecialchars($seance['discipline']) ?></td>
+                            <td><?= htmlspecialchars($seance['date_seance']) ?></td>
+                            <td><?= htmlspecialchars($seance['heure']) ?></td>
+                            <td><?= htmlspecialchars($seance['duree']) ?></td>
+                            <td>
+                                <a href="/sport-mvc/public/sportif/reserver?id=<?= $seance['id'] ?>">
+                                    <button>Réserver</button>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php else: ?>
+                <p>Aucune séance disponible.</p>
+            <?php endif; ?>
+        </div>
 
-</div>
+    </div>
 
 </body>
+
 </html>

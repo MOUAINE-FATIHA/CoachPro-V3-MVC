@@ -35,4 +35,9 @@ $router->get('/sport-mvc/public/sportif/history', 'SportifController@history');
 
 $router->get('/sport-mvc/public/logout', 'AuthController@logout');
 
+
+$router->get(
+    '/sport-mvc/public/coach/reservation/update','CoachController@updateReservationStatus'
+);
+
 ?>
